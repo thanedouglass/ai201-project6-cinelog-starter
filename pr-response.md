@@ -26,8 +26,13 @@ I verified the check is performed after confirming the film exists and before
 the new entry is added or committed, then ran the full test suite.
 
 ## Comment 3 — Missing test
-**What I did:**
+**What I did:** Created `tests/test_watchlist.py` with the equivalent of
+`test_add_to_collection_nonexistent_film_raises` from
+`tests/test_collection.py`. It uses the same isolated in-memory app and
+`sample_user` fixtures, supplies a nonexistent UUID, and asserts that
+`FilmNotFoundError` is raised.
 **How I verified:**
+I ran `pytest tests/test_watchlist.py -v`, followed by `pytest tests/ -v`.
 
 ## Comment 4 — Default visibility
 **My position:**
