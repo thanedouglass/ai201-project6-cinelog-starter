@@ -1,7 +1,14 @@
 # PR Response Doc — CineLog Watchlist Feature
 
 ## AI Usage
-<!-- Fill in at the end — how you used AI tools during this project -->
+I used AI tools to orient myself in the repository, inspect the original PR's
+inline and conversation comments, compare `add_to_watchlist()` with
+`add_to_collection()`, and verify all call sites before renaming. I also used
+AI as a devil's advocate for Comments 4 and 5 by asking what counterargument a
+careful reviewer might raise and what tradeoff was missing. That review
+reinforced the privacy caveat for a public default and the lookup-vs-recency
+tradeoff for date-added ordering; the final positions and wording are my
+reasoning for CineLog.
 
 ## Comment 1 — Rename
 **What I did:** Renamed `save_to_watchlist()` to `add_to_watchlist()` in
@@ -84,4 +91,44 @@ origin/main..HEAD` is empty, the model diff uses UUID strings, and the full
 test suite passes.
 
 ## PR Description
-<!-- Written at the end — feature overview, design decisions, manual testing steps -->
+The watchlist feature lets a CineLog user add films for later and retrieve
+their watchlist through the REST API. It validates that the film exists,
+prevents duplicate user/film entries, preserves visibility metadata, and
+returns the newest additions first. Film references use the UUID model from
+`main`.
+
+Design decisions:
+
+- **Visibility default:** New watchlist entries remain public by default to
+  support CineLog's social discovery use case. The tradeoff is that users
+  who expect private planning must explicitly opt out, so the UI should make
+  visibility clear and editable.
+- **Sort order:** Watchlists are ordered by `date_added` descending (newest
+  first), because recent viewing intentions are more useful than alphabetical
+  lookup for the default view. Alphabetical sorting could be added as a
+  separate option later.
+
+Manual testing:
+
+1. Start the CineLog Flask app using the repository's normal development
+   command.
+2. `POST /watchlist/<user_uuid>/add` with
+   `{"film_id": "<existing_film_uuid>"}` and confirm a `201` response.
+3. Repeat the same request and confirm the duplicate-entry error is returned
+   without creating another row.
+4. `POST` with a nonexistent UUID and confirm the film-not-found error.
+5. `GET /watchlist/<user_uuid>` and confirm entries are newest first and
+   include `date_added` and `public`.
+
+Final history check (`git log --oneline origin/main..HEAD`; screenshot
+equivalent recorded here):
+
+```text
+caa97d2 fix: update WatchlistEntry film_id to UUID after main branch refactor
+dc7c646 fix: sort watchlist by date added
+1147b52 test: cover nonexistent watchlist film
+2488254 fix: prevent duplicate watchlist entries
+61725ae fix: rename watchlist save method
+9cae5c9 fix: update film retrieval method to use db.session.get in collection and watchlist services
+9a52b81 feat: add watchlist model and endpoint
+```
