@@ -120,10 +120,13 @@ Manual testing:
 5. `GET /watchlist/<user_uuid>` and confirm entries are newest first and
    include `date_added` and `public`.
 
-Final history check (`git log --oneline origin/main..HEAD`; screenshot
-equivalent recorded here):
+Final history check (`git log --oneline origin/main..HEAD`; the terminal
+screenshot is included below):
+
+![Terminal screenshot showing the conventional commit history](TERMINAL_OUTPUT.jpg)
 
 ```text
+771ce8e docs: document watchlist review responses
 caa97d2 fix: update WatchlistEntry film_id to UUID after main branch refactor
 dc7c646 fix: sort watchlist by date added
 1147b52 test: cover nonexistent watchlist film
