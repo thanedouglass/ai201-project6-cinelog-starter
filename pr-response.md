@@ -14,8 +14,16 @@ I reviewed all search results for both function names and ran the full test
 suite after the rename.
 
 ## Comment 2 — Deduplication
-**What I did:**
+**What I did:** I followed the existing `add_to_collection()` pattern in
+`services/collection_service.py`. Its duplicate check calls
+`CollectionEntry.query.filter_by(user_id=user_id, film_id=film_id).first()`;
+when an entry is found, it raises `AlreadyInCollectionError` instead of
+creating another row. I applied the same check to `WatchlistEntry` in
+`add_to_watchlist()`, raising `AlreadyInWatchlistError` when a duplicate is
+found.
 **How I verified:**
+I verified the check is performed after confirming the film exists and before
+the new entry is added or committed, then ran the full test suite.
 
 ## Comment 3 — Missing test
 **What I did:**
