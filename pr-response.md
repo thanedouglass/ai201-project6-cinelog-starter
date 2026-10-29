@@ -67,9 +67,21 @@ title-based browsing would now require a separate sort option if that becomes
 a product need.
 
 ## Comment 6 — Rebase
-**What conflicted:**
+**What conflicted:** Rebasing the original watchlist commit onto updated
+`origin/main` produced a conflict in `models.py`: `WatchlistEntry.film_id`
+was still `db.Integer` on the feature side while main had migrated `Film.id`
+and collection foreign keys to UUID strings.
 **How I resolved it:**
+I kept the UUID-compatible `db.String(36)` foreign key from main and retained
+the watchlist index. I also updated the watchlist endpoint documentation from
+an integer film ID to a UUID representation, then committed that explicit
+UUID update as `fix: update WatchlistEntry film_id to UUID after main branch
+refactor`.
 **How I verified no conflict remains:**
+The rebase completed successfully after the conflict was staged and
+continued. `git status` shows no unmerged paths, `git log --merges
+origin/main..HEAD` is empty, the model diff uses UUID strings, and the full
+test suite passes.
 
 ## PR Description
 <!-- Written at the end — feature overview, design decisions, manual testing steps -->
